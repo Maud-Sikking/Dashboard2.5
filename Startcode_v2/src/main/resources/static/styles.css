@@ -1,0 +1,29 @@
+.formsubmit {
+    margin-top: 10px;
+    float: right;
+    margin-left: 10px;
+}
+
+form {
+    margin-bottom: 50px;
+}
+
+#edit-patient-form {
+    display: none;
+}
+
+ body {
+     background-color: #E6F4F1; /* Lichtblauwe achtergrond */
+
+ }
+
+.logo {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 60px;          /* Maximale breedte */
+    height: auto;         /* Zorg dat de hoogte automatisch schaalt */
+    max-width: 100px;     /* Optioneel, stel een maximumgrootte in */
+    max-height: 100px;    /* Voorkomt te grote afbeeldingen */
+    object-fit: contain;  /* Voorkomt uitrekken en behoudt aspect ratio */
+}

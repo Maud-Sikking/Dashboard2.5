@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<img src="logouva.png" alt="UvA Logo" style="position: absolute; top: 10px; right: 10px; width: 60px; height: auto;">
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <h2 class="mt-5 text-center">Login</h2>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Gebruikersnaam</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Wachtwoord</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Inloggen</button>
+            </form>
+            <div id="error" class="mt-3 text-danger" style="display: none;">Onjuiste gebruikersnaam of wachtwoord</div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Login formulier afhandeling
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        // Verzend de inloggegevens naar de server
+        fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Onjuiste gebruikersnaam of wachtwoord');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Bewaar de token of sessie en redirect
+            sessionStorage.setItem('authToken', data.token); // Voor een token-gebaseerde aanpak
+            window.location.href = '/dashboard.html';
+        })
+        .catch(error => {
+            document.getElementById('error').style.display = 'block';
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!doctype html>
+
+<html>
+<head>
+    <title>SNOMED CT</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="/webtoolkit.md5.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/styles.css">
+
+</head>
+<body>
+<!-- UvA Logo rechtsboven -->
+<img src="../logouva.png" alt="UvA Logo" style="position: absolute; top: 10px; right: 10px; width: 60px; height: auto;">
+<div class="col-lg-8 mx-auto p-4 py-md-5">
+
+
+    <header>
+        <h1>SNOMED CT</h1>
+        <div class="mb-5">
+            Krijg een dropdown van SNOMED CT concepten o.b.v. zoekterm.
+        </div>
+        <div class="mb-5">
+            </div>
+    </header>
+
+    <hr class="col-3 col-md-2 mb-5">
+
+    <main>
+        <div id="myselect" width=100%>
+            <select class="js-data-example-ajax form-control select2" multiple=""></select>
+        </div>
+
+        <div id="snomedresult">
+            <pre><code></code></pre>
+        </div>
+
+
+        <div id="landenresult">
+            <pre><code></code></pre>
+        </div>
+    </main>
+</div>
+
+<script>
+    // below comes from (adapted): https://select2.org/data-sources/ajax
+    $('.js-data-example-ajax').select2({
+        ajax: {
+            delay: 250, // wait 250 milliseconds before triggering the request
+            url: 'https://browser.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts',
+            data: function (params) {
+                var query = {
+                    activeFilter: 'true',
+                    term: params.term,
+                    termActive: 'true',
+                    ecl: '<< 74732009'
+                };
+                return query;
+            },
+            dataType: 'json',
+            processResults: function (data) {
+                return {
+                    results: data.items
+                };
+            }
+        },
+        placeholder: 'Search for a term',
+        minimumInputLength: 1,
+        templateResult: formatTerm,
+        templateSelection: formatTermSelection
+    });
+
+    function formatTerm (term) {
+        if (term.loading) {
+            return "...";
+        }
+
+        var $container = $(
+            "<div class='select2-result-snomed__pt'>" + term.pt.term + "</div>"
+        );
+        $container.slot = term.conceptId;
+
+        return $container;
+    }
+
+    function formatTermSelection (term) {
+        $( "#snomedresult pre code" ).html($('.js-data-example-ajax').val());
+        return term.pt.term || term.text;
+    }
+</script>
+</body>
+</html>
