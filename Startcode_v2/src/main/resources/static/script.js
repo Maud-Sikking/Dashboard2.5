@@ -50,7 +50,7 @@ document.getElementById('logoutButton')?.addEventListener('click', function () {
     localStorage.removeItem("authToken");
 
     // Redirect naar de inlogpagina
-    window.location.href = "./login.html";
+    window.location.href = "./index.html";
 });
 
 // Beveiligde pagina validatie
@@ -96,6 +96,35 @@ function loadPatients() {
     });
 }
 loadPatients()
+
+function loadalarms() {
+    $.getJSON("/alarms", function (data) {
+        console.log("Alarm device geladen:", data);
+        let patients = normaliseerGenders(data.database_patient);
+
+        $('#patienten').DataTable({
+            data: patients,
+            columns: [
+                { data: 'patient_id' },
+                { data: 'voornamen' },
+                { data: 'achternaam' },
+                { data: 'initialen' },
+                { data: 'roepnaam' },
+                { data: 'geboortedatum' },
+                { data: 'emailadres' },
+                { data: 'straatnaam' },
+                { data: 'huisnummer' },
+                { data: 'huisnummertoevoeging' },
+                { data: 'postcode' },
+                { data: 'woonplaats' },
+                { data: 'iq' },
+                { data: 'genderidentiteit' }
+            ]
+        })
+    });
+}
+loadalarms()
+
 
 function getFullName(patient) {
     let fullname = `${patient.voornamen} `;
