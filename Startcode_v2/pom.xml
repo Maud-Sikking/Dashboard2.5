@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.example</groupId>
-    <artifactId>Startcode_v2</artifactId>
+    <artifactId>GenusCare</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Startcode_v2</name>
-    <description>Startcode_v2</description>
+    <name>CodeGenusCare</name>
+    <description>Code voor het visuele dashboard voor Genus Care</description>
     <url/>
     <licenses>
         <license/>
@@ -45,11 +45,6 @@
             <artifactId>android-json</artifactId>
             <version>0.0.20131108.vaadin1</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.2.24</version>
         </dependency>
     </dependencies>
 

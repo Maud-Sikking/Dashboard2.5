@@ -10,5 +10,4 @@ public class StartcodeV2Application {
     public static void main(String[] args) {
         SpringApplication.run(StartcodeV2Application.class, args);
     }
-
 }
