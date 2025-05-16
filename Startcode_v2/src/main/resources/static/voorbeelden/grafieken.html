@@ -53,33 +53,48 @@
 
     <main>
       <div class="row">
-        <div class="col-md-6">
-          <canvas id="Cirkeldiagram"></canvas>
+        <div style="width: 50%; margin: auto;">
+          <canvas id="Chart"></canvas>
         </div>
+
         <script>
-          var ctx = document.getElementById('Cirkeldiagram').getContext('2d')
+          fetch("/gemAlertsDec", { method: "POST" })
+                  .then(response => response.json())
+                  .then(result => {
+                    const count = result.data.alerts_per_device_november_2024_aggregate.aggregate.count;
 
-          var Cirkeldiagram = new Chart(ctx, {
-            const: data = {
-              labels: [
-                'Red',
-                'Blue',
-                'Yellow'
-              ],
-              datasets: [{
-                label: 'My First Dataset',
-                data: [300, 50, 100],
-                backgroundColor: [
-                  'rgb(255, 99, 132)',
-                  'rgb(54, 162, 235)',
-                  'rgb(255, 205, 86)'
-                ],
-                hoverOffset: 4
-              }]
-            }
-          })
+                    const ctx = document.getElementById('Chart').getContext('2d');
+
+                    new Chart(ctx, {
+                      type: 'bar',
+                      data: {
+                        labels: ['Devices (10–30 alerts)'],
+                        datasets: [{
+                          label: 'Aantal devices',
+                          data: [count],
+                          backgroundColor: ['rgba(54, 162, 235, 0.5)'],
+                          borderColor: ['rgba(54, 162, 235, 1)'],
+                          borderWidth: 1
+                        }]
+                      },
+                      options: {
+                        responsive: true,
+                        plugins: {
+                          title: {
+                            display: true,
+                            text: 'Aantal devices met 10–30 alerts (november 2024)'
+                          }
+                        },
+                        scales: {
+                          y: {
+                            beginAtZero: true,
+                            stepSize: 5
+                          }
+                        }
+                      }
+                    });
+                  });
         </script>
-
 
         <div style="width: 50%; margin: auto;">
           <canvas id="myChart"></canvas>

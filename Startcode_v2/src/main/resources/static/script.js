@@ -3,6 +3,15 @@
 // URL van Hasura endpoint
 const HASURA_URL = "https://jouw-hasura-endpoint/v1/graphql";
 
+// Hasura query: data gemiddelde aantal alerts per device van december
+fetch('/gemAlertsDec')
+    .then(response => response.json())
+    .then(data => {
+        const devices = data.data.devices;
+        // verwerk devices voor Chart.js
+    });
+
+
 // Inlogfunctie
 document.getElementById('loginForm')?.addEventListener('submit', async function (e) {
     e.preventDefault();
