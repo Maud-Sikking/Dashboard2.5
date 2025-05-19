@@ -26,7 +26,7 @@
     }
   </style>
 </head>
-<body onload="loadPatients()">
+<body>
 
 <!-- uitlogknop rechtsboven -->
 <div class="mt-4">
@@ -42,23 +42,23 @@
   </ol>
 </nav>
 
-<div class="container">
-  <div class="col-lg-8 mx-auto p-4 py-md-3">
+<div class="container fluid px-5">
+  <div>
     <header>
-      <h1 class="text-start my-4">Grafieken</h1>
-      <div class="mb-5">
+      <h1 class="text-start my-4 col-lg-8 mx-auto p-4 py-md-3 ">Grafieken</h1>
+      <div class="mb-5 col-lg-8 mx-auto p-4 py-md-3">
         Krijg een beeld van trends over de tijd.
       </div>
     </header>
 
     <main>
-      <div class="row">
-        <div style="width: 50%; margin: auto;">
-          <canvas id="Chart"></canvas>
+      <div class="row justify-content-center" >
+       <!-- <div class = "col-md-6">
+          <canvas id="Chart" style="height:400px"></canvas>
         </div>
 
         <script>
-          fetch("/gemAlertsDec", { method: "POST" })
+          fetch("/gemAlertsDec", { method: "GET" })
                   .then(response => response.json())
                   .then(result => {
                     const count = result.data.alerts_per_device_november_2024_aggregate.aggregate.count;
@@ -94,12 +94,174 @@
                       }
                     });
                   });
-        </script>
+        </script> -->
 
-        <div style="width: 50%; margin: auto;">
-          <canvas id="myChart"></canvas>
+        <div class="col-md-6">
+          <canvas id="alertBarChart" style="height:400px"></canvas>
         </div>
         <script>
+          fetch("/api/alerts-per-categorie-5")
+                  .then(response => response.json())
+                  .then(data => {
+                    if (!data.data || !data.data.group1) {
+                      console.error("Ongeldige response van backend:", data);
+                      return;
+                    }
+
+                    const counts = [
+                      data.data.group1.aggregate.count,
+                      data.data.group2.aggregate.count,
+                      data.data.group3.aggregate.count,
+                      data.data.group4.aggregate.count,
+                      data.data.group5.aggregate.count,
+                    ];
+
+                    const labels = [
+                      "1–10 alerts",
+                      "11–30 alerts",
+                      "31–50 alerts",
+                      "51–70 alerts",
+                      "> 70 alerts"
+                    ];
+
+                    const ctx = document.getElementById("alertBarChart").getContext("2d");
+                    new Chart(ctx, {
+                      type: "bar",
+                      data: {
+                        labels: labels,
+                        datasets: [{
+                          label: "Aantal devices per aantal alerts ontvangen (januari 2025)",
+                          data: counts,
+                          backgroundColor: "rgba(54, 162, 235, 0.5)",
+                          borderColor: "rgba(54, 162, 235, 1)",
+                          borderWidth: 1
+                        }]
+                      },
+                      options: {
+                        responsive: true,
+                        scales: {
+                          y: {
+                            beginAtZero: true,
+                            ticks: {
+                              stepSize: 10
+                            }
+                          }
+                        }
+                      }
+                    });
+                  })
+                  .catch(error => console.error("Fout bij ophalen alerts:", error));
+        </script>
+
+        <div class="col-md-6">
+          <canvas id="alertBarChartFeb" style="height:400px"></canvas>
+        </div>
+        <script>
+          fetch("/api/alerts-per-categorie-5-februari")
+                  .then(response => response.json())
+                  .then(data => {
+                    if (!data.data || !data.data.group1) {
+                      console.error("Ongeldige response van backend:", data);
+                      return;
+                    }
+
+                    const counts = [
+                      data.data.group1.aggregate.count,
+                      data.data.group2.aggregate.count,
+                      data.data.group3.aggregate.count,
+                      data.data.group4.aggregate.count,
+                      data.data.group5.aggregate.count,
+                    ];
+
+                    const labels = [
+                      "1–10 alerts",
+                      "11–30 alerts",
+                      "31–50 alerts",
+                      "51–70 alerts",
+                      "> 70 alerts"
+                    ];
+
+                    const ctx = document.getElementById("alertBarChartFeb").getContext("2d");
+                    new Chart(ctx, {
+                      type: "bar",
+                      data: {
+                        labels: labels,
+                        datasets: [{
+                          label: "Aantal devices per aantal alerts ontvangen (februari 2025)",
+                          data: counts,
+                          backgroundColor: "rgba(54, 162, 235, 0.5)",
+                          borderColor: "rgba(54, 162, 235, 1)",
+                          borderWidth: 1
+                        }]
+                      },
+                      options: {
+                        responsive: true,
+                        scales: {
+                          y: {
+                            beginAtZero: true,
+                            ticks: {
+                              stepSize: 10
+                            }
+                          }
+                        }
+                      }
+                    });
+                  })
+                  .catch(error => console.error("Fout bij ophalen alerts:", error));
+        </script>
+
+          <div class="col-md-6">
+              <h5>Verdeling van soorten alerts (januari 2025)</h5>
+              <canvas id="alertDoughnutChart" style="max-width: 400px; max-height: 400px"></canvas>
+          </div>
+          <script>
+              fetch("/api/alerts-soorten-januari")
+                  .then(response => response.json())
+                  .then(data => {
+                      const result = data.data.soort_alert_januari_2025.filter(row => row.type !== "FRAME_OFFLINE");
+
+                      const labels = result.map(row => row.type);
+                      const values = result.map(row => row.alert_count);
+
+                      const ctx = document.getElementById("alertDoughnutChart").getContext("2d");
+                      new Chart(ctx, {
+                          type: "doughnut",
+                          data: {
+                              labels: labels,
+                              datasets: [{
+                                  data: values,
+                                  backgroundColor: [
+                                      'rgba(255, 99, 132, 0.6)',
+                                      'rgba(54, 162, 235, 0.6)',
+                                      'rgba(255, 206, 86, 0.6)',
+                                      'rgba(75, 192, 192, 0.6)',
+                                      'rgba(153, 102, 255, 0.6)',
+                                      'rgba(255, 159, 64, 0.6)'
+                                  ],
+                                  borderColor: 'rgba(255, 255, 255, 1)',
+                                  borderWidth: 1
+                              }]
+                          },
+                          options: {
+                              responsive: true,
+                              plugins: {
+                                  legend: {
+                                      position: 'bottom'
+                                  },
+                                  title: {
+                                      display: false
+                                  }
+                              }
+                          }
+                      });
+                  });
+        </script>
+
+
+
+
+
+      <!--  <script>
           // JavaScript code om de grafiek weer te geven komt hier
           var ctx = document.getElementById('myChart').getContext('2d');
 
@@ -138,11 +300,11 @@
               }
             }
           });
-        </script>
+        </script>-->
 
       </div>
 
-      <div class="row">
+    <!--  <div class="row">
         <div class="col-md-6">
           <figure class="figure">
             <img src="/SS%20figuur%20default.png" class="figure-img img-fluid rounded" alt="...">
@@ -156,7 +318,7 @@
             <figcaption class="figure-caption">A caption for the above image.</figcaption>
           </figure>
         </div>
-      </div>
+      </div> -->
 
 
     <!--  <button onclick="location.href = './patient_add.html'">Voeg patient toe</button>
