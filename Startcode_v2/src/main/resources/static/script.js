@@ -1,15 +1,74 @@
 // URL van Hasura endpoint
 const HASURA_URL = "https://jouw-hasura-endpoint/v1/graphql";
 
-// Hasura query: data aantal alerts per device van december
-fetch('/gemAlertsDec')
-    .then(response => response.json())
-    .then(data => {
-        const devices = data.data.devices;
-        // verwerk devices voor Chart.js
+const createCenterTextPlugin = (text) => ({
+    id: 'centerText',
+    beforeDraw(chart) {
+        const { width, height, ctx } = chart;
+        ctx.restore();
+
+        const fontSize = (height / 150).toFixed(2);
+        ctx.font = `${fontSize}em sans-serif`;
+        ctx.textBaseline = "middle";
+
+        const textX = Math.round((width - ctx.measureText(text).width) / 2);
+        const textY = height / 2;
+
+        ctx.fillText(text, textX, textY);
+        ctx.save();
+    }
+});
+
+function renderDoughnutChart(canvasId, labels, values, chartTitle) {
+    const total = values.reduce((sum, val) => sum + val, 0);
+    const ctx = document.getElementById(canvasId).getContext("2d");
+
+    new Chart(ctx, {
+        type: "doughnut",
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(153, 102, 255, 0.6)',
+                    'rgba(255, 159, 64, 0.6)'
+                ],
+                borderColor: 'white',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                title: {
+                    display: true,
+                    text: chartTitle
+                }
+            }
+        },
+        plugins: [createCenterTextPlugin(total.toString())]
     });
+}
 
+function loadDoughnutCharts() {
+    fetch("/api/alerts-soorten-januari")
+        .then(res => res.json())
+        .then(data => {
+            const result = data.data.soort_alert_januari_2025
+                .filter(row => row.type !== "FRAME_OFFLINE");
+            const labels = result.map(row => row.type);
+            const values = result.map(row => row.alert_count);
+            renderDoughnutChart("alertDoughnutChart", labels, values, "Alerts januari");
+        });
 
+}
 
 
 // Inlogfunctie

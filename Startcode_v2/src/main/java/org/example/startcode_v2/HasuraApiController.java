@@ -139,7 +139,126 @@ public class HasuraApiController extends ApiController {
             headers
     );
 
-    return restTemplate.exchange(BASE_URL, HttpMethod.POST, request, String.class);
+    ResponseEntity<String> response = restTemplate.exchange(
+            BASE_URL,
+            HttpMethod.POST,
+            request,
+            String.class
+    );
+
+    return response;
+
+  }
+
+  @GetMapping("/api/alerts-soorten-februari")
+  public ResponseEntity<String> alertsSoortenFebruari() {
+    String query = """
+    {
+      soort_alert_februari_2025 {
+        alert_count
+        type
+      }
+    }
+    """;
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("x-hasura-admin-secret", SECRET);
+
+    HttpEntity<String> request = new HttpEntity<>(
+            "{\"query\": \"" + query.replace("\"", "\\\"").replace("\n", "") + "\"}",
+            headers
+    );
+
+    ResponseEntity<String> response = restTemplate.exchange(
+            BASE_URL,
+            HttpMethod.POST,
+            request,
+            String.class
+    );
+
+    return response;
+  }
+
+  @GetMapping("/api/alerts-soorten-maart")
+  public ResponseEntity<String> alertsSoortenMaart() {
+    String query = """
+    {
+      soort_alert_maart_2025 {
+        alert_count
+        type
+      }
+    }
+    """;
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("x-hasura-admin-secret", SECRET);
+
+    HttpEntity<String> request = new HttpEntity<>(
+            "{\"query\": \"" + query.replace("\"", "\\\"").replace("\n", "") + "\"}",
+            headers
+    );
+
+    ResponseEntity<String> response = restTemplate.exchange(
+            BASE_URL,
+            HttpMethod.POST,
+            request,
+            String.class
+    );
+
+    return response;
+  }
+
+  @GetMapping("/api/origin-ids-per-maand")
+  public ResponseEntity<String> originIdPerMaand() {
+    String query = """
+    {
+      decemberUnieke: messages_aggregate(distinct_on: originId
+             where: {sent: {_gte: "2024-12-01T00:00:00", _lt: "2025-01-01T00:00:00"}}) {
+             aggregate { count }
+             }
+      decemberTotaal: messages_aggregate(where: {sent: {_gte: "2024-12-01T00:00:00", _lt: "2025-01-01T00:00:00"}}) {
+             aggregate { count }
+             }
+      januariUnieke: messages_aggregate(distinct_on: originId
+             where: {sent: {_gte: "2025-01-01T00:00:00", _lt: "2025-02-01T00:00:00"}}) {
+             aggregate { count }
+             }
+      januariTotaal: messages_aggregate(where: {sent: {_gte: "2025-01-01T00:00:00", _lt: "2025-02-01T00:00:00"}}) {
+             aggregate { count }
+             }
+      februariUnieke: messages_aggregate(distinct_on: originId
+             where: {sent: {_gte: "2025-02-01T00:00:00", _lt: "2025-03-01T00:00:00"}}) {
+             aggregate { count }
+             }
+      februariTotaal: messages_aggregate(where: {sent: {_gte: "2025-02-01T00:00:00", _lt: "2025-03-01T00:00:00"}}) {
+             aggregate { count }
+             }
+      maartUnieke: messages_aggregate(distinct_on: originId
+             where: {sent: {_gte: "2025-03-01T00:00:00", _lt: "2025-04-01T00:00:00"}}) {
+             aggregate { count }
+             }
+      maartTotaal: messages_aggregate(where: {sent: {_gte: "2025-03-01T00:00:00", _lt: "2025-04-01T00:00:00"}}) {
+             aggregate { count }
+             }
+    }
+    """;
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("x-hasura-admin-secret", SECRET);
+
+    HttpEntity<String> request = new HttpEntity<>("{\"query\": \"" + query.replace("\"", "\\\"").replace("\n", "") + "\"}", headers);
+
+    ResponseEntity<String> response = restTemplate.exchange(
+            BASE_URL,
+            HttpMethod.POST,
+            request,
+            String.class
+    );
+
+    return response;
   }
 
 
