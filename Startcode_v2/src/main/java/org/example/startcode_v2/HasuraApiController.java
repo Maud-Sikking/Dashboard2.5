@@ -214,34 +214,18 @@ public class HasuraApiController extends ApiController {
   public ResponseEntity<String> originIdPerMaand() {
     String query = """
     {
-      decemberUnieke: messages_aggregate(distinct_on: originId
-             where: {sent: {_gte: "2024-12-01T00:00:00", _lt: "2025-01-01T00:00:00"}}) {
-             aggregate { count }
-             }
-      decemberTotaal: messages_aggregate(where: {sent: {_gte: "2024-12-01T00:00:00", _lt: "2025-01-01T00:00:00"}}) {
-             aggregate { count }
-             }
-      januariUnieke: messages_aggregate(distinct_on: originId
-             where: {sent: {_gte: "2025-01-01T00:00:00", _lt: "2025-02-01T00:00:00"}}) {
-             aggregate { count }
-             }
-      januariTotaal: messages_aggregate(where: {sent: {_gte: "2025-01-01T00:00:00", _lt: "2025-02-01T00:00:00"}}) {
-             aggregate { count }
-             }
-      februariUnieke: messages_aggregate(distinct_on: originId
-             where: {sent: {_gte: "2025-02-01T00:00:00", _lt: "2025-03-01T00:00:00"}}) {
-             aggregate { count }
-             }
-      februariTotaal: messages_aggregate(where: {sent: {_gte: "2025-02-01T00:00:00", _lt: "2025-03-01T00:00:00"}}) {
-             aggregate { count }
-             }
-      maartUnieke: messages_aggregate(distinct_on: originId
-             where: {sent: {_gte: "2025-03-01T00:00:00", _lt: "2025-04-01T00:00:00"}}) {
-             aggregate { count }
-             }
-      maartTotaal: messages_aggregate(where: {sent: {_gte: "2025-03-01T00:00:00", _lt: "2025-04-01T00:00:00"}}) {
-             aggregate { count }
-             }
+      decemberMeerdereFrames: meerdere_originids_december_2024_aggregate {aggregate {count}}
+      decemberTotaal: messages_aggregate(distinct_on: originId
+               where: {sent: {_gte: "2024-12-01T00:00:00", _lt: "2025-01-01T00:00:00"}}) {aggregate { count }}
+      januariMeerdereFrames: meerdere_originids_januari_2025_aggregate {aggregate {count}}
+      januariTotaal: messages_aggregate(distinct_on: originId
+               where: {sent: {_gte: "2025-01-01T00:00:00", _lt: "2025-02-01T00:00:00"}}) {aggregate { count }}
+      februariMeerdereFrames: meerdere_originids_februari_2025_aggregate {aggregate {count}}
+      februariTotaal: messages_aggregate(distinct_on: originId
+               where: {sent: {_gte: "2025-02-01T00:00:00", _lt: "2025-03-01T00:00:00"}}) {aggregate { count }}
+      maartMeerdereFrames: meerdere_originids_maart_2025_aggregate {aggregate {count}}
+      maartTotaal: messages_aggregate(distinct_on: originId
+               where: {sent: {_gte: "2025-03-01T00:00:00", _lt: "2025-04-01T00:00:00"}}) {aggregate { count }}
     }
     """;
 
@@ -261,5 +245,93 @@ public class HasuraApiController extends ApiController {
     return response;
   }
 
+  @GetMapping("/api/alert-type-answer-no")
+  public ResponseEntity<String> alertsPerMaandTrend() {
+    String query = """
+    {
+      oktober1: alerts_aggregate(where: {created: {_gte: "2024-10-01T00:00:00", _lte: "2024-11-01T00:00:00"}, frameUUID: {_eq: "760e1d27-f2ad-43fc-880b-3bd810f7b705"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+      november1: alerts_aggregate(where: {created: {_gte: "2024-11-01T00:00:00", _lte: "2024-12-01T00:00:00"}, frameUUID: {_eq: "760e1d27-f2ad-43fc-880b-3bd810f7b705"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+      december1: alerts_aggregate(where: {created: {_gte: "2024-12-01T00:00:00", _lte: "2025-01-01T00:00:00"}, frameUUID: {_eq: "760e1d27-f2ad-43fc-880b-3bd810f7b705"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+      januari1: alerts_aggregate(where: {created: {_gte: "2025-01-01T00:00:00", _lte: "2025-02-01T00:00:00"}, frameUUID: {_eq: "760e1d27-f2ad-43fc-880b-3bd810f7b705"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+      februari1: alerts_aggregate(where: {created: {_gte: "2025-02-01T00:00:00", _lte: "2025-03-01T00:00:00"}, frameUUID: {_eq: "760e1d27-f2ad-43fc-880b-3bd810f7b705"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+      maart1: alerts_aggregate(where: {created: {_gte: "2025-03-01T00:00:00", _lte: "2025-04-01T00:00:00"}, frameUUID: {_eq: "760e1d27-f2ad-43fc-880b-3bd810f7b705"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+      oktober2: alerts_aggregate(where: {created: {_gte: "2024-10-01T00:00:00", _lte: "2024-11-01T00:00:00"}, frameUUID: {_eq: "11f5aa26-4964-49df-ac2b-83354cbd518a"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+      november2: alerts_aggregate(where: {created: {_gte: "2024-11-01T00:00:00", _lte: "2024-12-01T00:00:00"}, frameUUID: {_eq: "11f5aa26-4964-49df-ac2b-83354cbd518a"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+      december2: alerts_aggregate(where: {created: {_gte: "2024-12-01T00:00:00", _lte: "2025-01-01T00:00:00"}, frameUUID: {_eq: "11f5aa26-4964-49df-ac2b-83354cbd518a"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+      januari2: alerts_aggregate(where: {created: {_gte: "2025-01-01T00:00:00", _lte: "2025-02-01T00:00:00"}, frameUUID: {_eq: "11f5aa26-4964-49df-ac2b-83354cbd518a"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+      februari2: alerts_aggregate(where: {created: {_gte: "2025-02-01T00:00:00", _lte: "2025-03-01T00:00:00"}, frameUUID: {_eq: "11f5aa26-4964-49df-ac2b-83354cbd518a"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+      maart2: alerts_aggregate(where: {created: {_gte: "2025-03-01T00:00:00", _lte: "2025-04-01T00:00:00"}, frameUUID: {_eq: "11f5aa26-4964-49df-ac2b-83354cbd518a"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+      oktober3: alerts_aggregate(where: {created: {_gte: "2024-10-01T00:00:00", _lte: "2024-11-01T00:00:00"}, frameUUID: {_eq: "cffe2ed4-2c15-43c8-ae80-e705c2560438"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+      november3: alerts_aggregate(where: {created: {_gte: "2024-11-01T00:00:00", _lte: "2024-12-01T00:00:00"}, frameUUID: {_eq: "cffe2ed4-2c15-43c8-ae80-e705c2560438"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+      december3: alerts_aggregate(where: {created: {_gte: "2024-12-01T00:00:00", _lte: "2025-01-01T00:00:00"}, frameUUID: {_eq: "cffe2ed4-2c15-43c8-ae80-e705c2560438"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+      januari3: alerts_aggregate(where: {created: {_gte: "2025-01-01T00:00:00", _lte: "2025-02-01T00:00:00"}, frameUUID: {_eq: "cffe2ed4-2c15-43c8-ae80-e705c2560438"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+      februari3: alerts_aggregate(where: {created: {_gte: "2025-02-01T00:00:00", _lte: "2025-03-01T00:00:00"}, frameUUID: {_eq: "cffe2ed4-2c15-43c8-ae80-e705c2560438"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+      maart3: alerts_aggregate(where: {created: {_gte: "2025-03-01T00:00:00", _lte: "2025-04-01T00:00:00"}, frameUUID: {_eq: "cffe2ed4-2c15-43c8-ae80-e705c2560438"}, type: {_eq: "MESSAGE_MEDICINE_ANSWER_NO"}}) {
+            aggregate {count}}
+    }
+    """;
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("x-hasura-admin-secret", SECRET);
+
+    HttpEntity<String> request = new HttpEntity<>("{\"query\": \"" + query.replace("\"", "\\\"").replace("\n", "") + "\"}", headers);
+
+    ResponseEntity<String> response = restTemplate.exchange(
+            BASE_URL,
+            HttpMethod.POST,
+            request,
+            String.class
+    );
+
+    return response;
+  }
+
+  @GetMapping("/api/communityCalls")
+  public ResponseEntity<String> communityCalls() {
+    String query = """
+    {
+      calls(where: {type: {_eq: "COMMUNITY"}, started: {_is_null: false}, ended: {_is_null: false}}) {
+                  started
+                  ended
+      }
+    }
+    """;
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("x-hasura-admin-secret", SECRET);
+
+    HttpEntity<String> request = new HttpEntity<>(
+            "{\"query\": \"" + query.replace("\"", "\\\"").replace("\n", "") + "\"}",
+            headers
+    );
+
+    ResponseEntity<String> response = restTemplate.exchange(
+            BASE_URL,
+            HttpMethod.POST,
+            request,
+            String.class
+    );
+
+    return response;
+  }
 
 }
