@@ -18,7 +18,6 @@ public class HasuraApiController extends ApiController {
   @Autowired
   private RestTemplate restTemplate;
 
-
   @GetMapping("/gemAlertsDec")
   public ResponseEntity<String> getDevices() {
     String query = """
@@ -50,16 +49,16 @@ public class HasuraApiController extends ApiController {
       group1: alerts_per_device_januari_2025_aggregate(where: { alert_count: { _lte: 10 } }) {
         aggregate { count }
       }
-      group2: alerts_per_device_januari_2025_aggregate(where: { alert_count: { _gt: 10, _lte: 30 } }) {
+      group2: alerts_per_device_januari_2025_aggregate(where: { alert_count: { _gt: 10, _lte: 50 } }) {
         aggregate { count }
       }
-      group3: alerts_per_device_januari_2025_aggregate(where: { alert_count: { _gt: 30, _lte: 50 } }) {
+      group3: alerts_per_device_januari_2025_aggregate(where: { alert_count: { _gt: 50, _lte: 100 } }) {
         aggregate { count }
       }
-      group4: alerts_per_device_januari_2025_aggregate(where: { alert_count: { _gt: 50, _lte: 70 } }) {
+      group4: alerts_per_device_januari_2025_aggregate(where: { alert_count: { _gt: 100, _lte: 200 } }) {
         aggregate { count }
       }
-      group5: alerts_per_device_januari_2025_aggregate(where: { alert_count: { _gt: 70 } }) {
+      group5: alerts_per_device_januari_2025_aggregate(where: { alert_count: { _gt: 200 } }) {
         aggregate { count }
       }
     }
@@ -88,16 +87,16 @@ public class HasuraApiController extends ApiController {
       group1: alerts_per_device_februari_2025_aggregate(where: { alert_count: { _lte: 10 } }) {
         aggregate { count }
       }
-      group2: alerts_per_device_februari_2025_aggregate(where: { alert_count: { _gt: 10, _lte: 30 } }) {
+      group2: alerts_per_device_februari_2025_aggregate(where: { alert_count: { _gt: 10, _lte: 50 } }) {
         aggregate { count }
       }
-      group3: alerts_per_device_februari_2025_aggregate(where: { alert_count: { _gt: 30, _lte: 50 } }) {
+      group3: alerts_per_device_februari_2025_aggregate(where: { alert_count: { _gt: 50, _lte: 100 } }) {
         aggregate { count }
       }
-      group4: alerts_per_device_februari_2025_aggregate(where: { alert_count: { _gt: 50, _lte: 70 } }) {
+      group4: alerts_per_device_februari_2025_aggregate(where: { alert_count: { _gt: 100, _lte: 200 } }) {
         aggregate { count }
       }
-      group5: alerts_per_device_februari_2025_aggregate(where: { alert_count: { _gt: 70 } }) {
+      group5: alerts_per_device_februari_2025_aggregate(where: { alert_count: { _gt: 200 } }) {
         aggregate { count }
       }
     }

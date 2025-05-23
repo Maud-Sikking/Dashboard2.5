@@ -26,17 +26,6 @@
             top: 100px;
             left: 100px;
         }
-        .number-display {
-            font-size: 48px;
-            font-weight: bold;
-            color: #000;
-            text-align: center;
-            padding: 20px;
-            border: 2px solid #000;
-            border-radius: 10px;
-            width: 200px;
-            margin: 50px auto;
-        }
     </style>
 </head>
 <body>
@@ -293,13 +282,13 @@
 
                 </script> -->
 
+                <!-- Gemiddelde duur van een COMMUNITY call.-->
                 <div class="card col-md-6" style="width: 18rem; max-height: 240px;">
                     <div class="card-body">
-                        <h5 class="card-title">Gemiddelde gespreksduur</h5>
+                        <h5 class="card-title">Mediaan gespreksduur</h5>
                         <h6 class="card-subtitle mb-2 text-muted">COMMUNITY CALLS</h6>
-                        <h3 id="gemiddeldeCallWaarde" class="card-text">...</h3>
-                        <p>Seconden</p>
-                        <a href="#" class="card-link">Card link</a>
+                        <h3 id="mediaanCallWaarde" class="card-text">...</h3>
+                        <p>Minuten</p>
                     </div>
                 </div>
                 <script>
@@ -307,15 +296,71 @@
                         .then(response => response.json())
                         .then(data => {
                             const alert = data.data.calls;
-                            const labels = ['Gemiddelde tijd'];
+
                             const durations = alert.map(call => {
                                 const started = new Date(call.started);
                                 const ended = new Date(call.ended);
                                 return (ended - started) / 1000; // in seconden
                             });
+                            // Sorteer de durations array.
+                            durations.sort((a, b) => a - b);
 
-                            const gemiddelde = durations.reduce((sum, dur) => sum + dur, 0) / durations.length;
-                            document.getElementById("gemiddeldeCallWaarde").innerText = Math.round(gemiddelde);
+                            // Bereken de mediaan.
+                            let mediaan;
+                            const half = Math.floor(durations.length / 2);
+                            if (durations.length % 2 === 0) {
+                                mediaan = (durations[half - 1] + durations[half]) / 2;
+                            } else {
+                                mediaan = durations[half];
+                            }
+
+                            // Toon de mediaan in minuten en seconden.
+                            const mediaanMinuten = Math.floor(mediaan / 60);
+                            const mediaanSeconden = Math.round(mediaan % 60);
+                            document.getElementById("mediaanCallWaarde").innerText = `${mediaanMinuten} minuten en ${mediaanSeconden} seconden`;
+                        });
+                </script>
+
+                <!-- Gemiddelde duur van een COMMUNITY call (zonder de eerste en laatste 1% om uitschieters eruit te halen)-->
+                <div class="card col-md-6" style="width: 18rem; max-height: 240px;">
+                    <div class="card-body">
+                        <h5 class="card-title">Gemiddelde gespreksduur min laatste en eerste 1% </h5>
+                        <h6 class="card-subtitle mb-2 text-muted">COMMUNITY CALLS</h6>
+                        <h3 id="mediaanMinEersteProcent" class="card-text">...</h3>
+                        <p>Minuten</p>
+                    </div>
+                </div>
+                <script>
+                    fetch("/api/communityCalls")
+                        .then(response => response.json())
+                        .then(data => {
+                            const calls = data.data.calls;
+
+                            // Haal 'started' en 'ended' waarden op en bereken de duur van elk gesprek
+                            const durations = calls.map(call => {
+                                const started = new Date(call.started);
+                                const ended = new Date(call.ended);
+                                return (ended - started) / 1000; // in seconden
+                            });
+
+                            // Sorteer de durations array
+                            durations.sort((a, b) => a - b);
+
+                            // Bereken het aantal datums om eruit te halen (1%)
+                            const numberOfCalls = durations.length;
+                            const removeCount = Math.floor(numberOfCalls * 0.01);
+
+                            // Verwijder de eerste 1% en laatste 1%
+                            const filteredDurations = durations.slice(removeCount, numberOfCalls - removeCount);
+
+                            // Bereken het gemiddelde
+                            const totaal = filteredDurations.reduce((sum, dur) => sum + dur, 0);
+                            const gemiddelde = totaal / filteredDurations.length;
+
+                            // Toont gemiddelde in minuten en seconden
+                            const gemMinuten = Math.floor(gemiddelde / 60);
+                            const gemSeconden = Math.round(gemiddelde % 60);
+                            document.getElementById("mediaanMinEersteProcent").innerText = `${gemMinuten} minuten en ${gemSeconden} seconden`;
                         });
                 </script>
 
