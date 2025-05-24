@@ -1,21 +1,139 @@
-.formsubmit {
-    margin-top: 10px;
-    float: right;
-    margin-left: 10px;
+.dashboard-body {
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: 60px 1fr;
+    grid-template-areas:
+                "side header"
+                "side main";
 }
 
-form {
-    margin-bottom: 50px;
+.header {
+    grid-area: header;
+    background-color: white;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.dashboard-title {
+    font-size: 24px;
+    color: #004f63;
+    margin: 0;
+    font-weight: bold;
 }
 
-#edit-patient-form {
-    display: none;
+
+.sidebar {
+    grid-area: side;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    background: linear-gradient(to bottom, #005c72, #003f54); /* rijkere blauw met glans */
+    padding: 20px;
+    padding-top: 60px;
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
 }
 
- body {
-     background-color: #E6F4F1; /* Lichtblauwe achtergrond */
+.custom-sidebar-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
 
- }
+.sidebar-item {
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    padding: 10px 15px;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.sidebar-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+.sidebar-item a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.active-item {
+    font-weight: bold;
+    background-color: #f0f0f0; /* Lichtere kleur */
+}
+.btn-logout {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-logout:hover {
+    background-color: #bb2d3b;
+}
+
+
+.main {
+    grid-area: main;
+    background-color: #c3c5ca;
+    padding: 25px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-areas:
+                "c1 c2 c3"
+                "c4 c4 c5"
+                "c4 c4 c6";
+    gap: 20px;
+
+
+}
+.card {
+    background-color: #f6f7f9;
+    border-radius: 10px;
+
+}
+.card:nth-child(1) {
+    grid-area: c1;
+}
+.card:nth-child(2) {
+    grid-area: c2;
+}
+.card:nth-child(3) {
+    grid-area: c3;
+}
+.card:nth-child(4) {
+    grid-area: c4;
+}
+.card:nth-child(5) {
+    grid-area: c5;
+}
+.card:nth-child(6) {
+    grid-area: c6;
+}
+@media (max-width: 1050px) {
+    .main {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(6, 200px);
+        grid-template-areas: initial;
+    }
+    .card{
+        grid-area: initial !important;
+    }
+}
 
 .logo {
     position: absolute;
