@@ -8,8 +8,9 @@ const monthNames = [
 ];
 
 //
-const doughnutCharts = {};
+const donutCharts = {};
 const deviceAlertCharts = {};
+const idBarCharts = {};
 
 
 
@@ -23,7 +24,7 @@ function vulJaarDropdown() {
         option.textContent = jaar;
         jaarSelect.appendChild(option);
     }
-    // Selecteer huidig jaar
+    // Selecteer huidig jaar voor default
     jaarSelect.value = huidigJaar;
 }
 
@@ -34,32 +35,54 @@ function zetMaandDropdown() {
     maandSelect.value = huidigMaand;
 }
 
+// Maakt YYYY-MM string
+function getYearMonth (){
+    const jaar = document.getElementById("yearSelect").value;
+    const maand = document.getElementById("monthSelect").value;
+    return `${jaar}-${maand}`;
+}
+
 // zorgt dat default charts kunnen runnen
 window.addEventListener("DOMContentLoaded", () => {
+    const bodyClass = document.body.classList;
     vulJaarDropdown();
     zetMaandDropdown();
 
-    const jaar = document.getElementById("yearSelect").value;
-    const maand = document.getElementById("monthSelect").value;
-    const monthParam = `${jaar}-${maand}`;
+    if (bodyClass.contains("dash-pagina")) {
+        updateDonutChart("alertDonutChart", getYearMonth ());
+        updateAantalActieveDevices("activeDevicesTitle", "activeDevices", getYearMonth ());
+        updateDeviceAlertBarChart("deviceAlertBarChart", getYearMonth ());
 
-    updateDoughnutChart("alertDoughnutChart", monthParam);
-    updateAantalActieveDevices("activeDevicesTitle", "activeDevices", monthParam);
-    updateDeviceAlertBarChart("deviceAlertBarChart", monthParam);
+
+    }
+    if (bodyClass.contains("zorgprof-pagina")) {
+        updateIdChart("messageIdChart", getYearMonth())
+        avgCommunityCall("gemCall")
+
+    }
+
+
 });
 
-// Wanneer op 'Toon' geklikt wordt:
-document.getElementById("filterBtn").addEventListener("click", () => {
-    const maand = document.getElementById("monthSelect").value;
-    const jaar = document.getElementById("yearSelect").value;
+// Algemene functie om event listener veilig toe te voegen als element bestaat
+function addClickListener(id, callback) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.addEventListener("click", callback);
+    }
+}
 
-    // Maak "YYYY-MM" string
-    const monthParam = `${jaar}-${maand}`;
+// Voor filterBtn op pagina algemeen dashboard (dash.html)
+addClickListener("filterBtn", () => {
+    updateDonutChart("alertDonutChart", getYearMonth());
+    updateAantalActieveDevices("activeDevicesTitle", "activeDevices", getYearMonth());
+    updateDeviceAlertBarChart("deviceAlertBarChart", getYearMonth());
+});
 
-    // Roep je alle functies aan die charts laten zien en updaten
-    updateDoughnutChart("alertDoughnutChart", monthParam);
-    updateAantalActieveDevices("activeDevicesTitle", "activeDevices", monthParam);
-    updateDeviceAlertBarChart("deviceAlertBarChart", monthParam)
+// Voor filterBtnZorgprof op pagina zorgprofessionals (zorgprof.html)
+addClickListener("filterBtnZorgprof", () => {
+    updateIdChart("messageIdChart", getYearMonth());
+
 });
 
 // voor titels
@@ -72,7 +95,8 @@ function updateDateTitle(selectedYearMonth) {
     }
 }
 
-function updateDoughnutChart(canvasId, selectedYearMonth) {
+// maakt/update type alert chart
+function updateDonutChart(canvasId, selectedYearMonth) {
     fetch(`/api/alerts?month=${selectedYearMonth}`)
         .then(res => {
             if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
@@ -89,8 +113,8 @@ function updateDoughnutChart(canvasId, selectedYearMonth) {
 
 
             // verwijdert eerst eventuele donutcharts
-            if (doughnutCharts[canvasId]) {
-                doughnutCharts[canvasId].destroy();
+            if (donutCharts[canvasId]) {
+                donutCharts[canvasId].destroy();
             }
 
             // Als geen data beschikbaar is
@@ -104,6 +128,8 @@ function updateDoughnutChart(canvasId, selectedYearMonth) {
             canvas.style.display = "block";
             melding.style.display = "none";
 
+
+            // alerts worden geteld op type en frame_offline wordt overgeslagen
             const counts = {};
             alerts.forEach(row => {
                 if (row.type !== "FRAME_OFFLINE") {
@@ -111,6 +137,7 @@ function updateDoughnutChart(canvasId, selectedYearMonth) {
                 }
             });
 
+            //nette tabel labels worden gemaakt
             const netteLabels = {
                 BATTERY: "Batterij Genus",
                 DAY_RHYTHM_DETECTION: "Ongebruikelijke dagstart",
@@ -125,29 +152,33 @@ function updateDoughnutChart(canvasId, selectedYearMonth) {
                 MESSAGE_MEDICINE_NO_RESPONSE: "Medicijnen niet ingenomen"
             };
 
+            //vaste kleuren worden gebruikt per type
             const kleurenPerType = {
-                BATTERY: 'rgba(255, 99, 132, 0.6)',                    // roodachtig
-                DAY_RHYTHM_DETECTION: 'rgba(54, 162, 235, 0.6)',       // blauw
-                EV04_LOW_BATTERY: 'rgba(255, 206, 86, 0.6)',           // geel
-                FRAME_SHUTDOWN: 'rgba(75, 192, 192, 0.6)',             // groenblauw
-                MESSAGE_MEDICINE_ANSWER_NO: 'rgba(153, 102, 255, 0.6)',// paars
-                TEMPERATURE_TOO_HIGH: 'rgba(255, 159, 64, 0.6)',       // oranje
-                TEMPERATURE_TOO_LOW: 'rgba(224, 31, 31, 0.75)',        // donkerrood
-                EV04_SHUTDOWN: 'rgba(91, 225, 255, 0.69)',             // lichtblauw
-                EV04_FALL: 'rgba(255, 102, 204, 0.6)',                 // roze
-                MESSAGE_NO_RESPONSE: 'rgba(102, 80, 255, 0.6)',       // blauwpaars
-                MESSAGE_MEDICINE_NO_RESPONSE: 'rgba(0, 191, 165, 0.6)' // teal
+                BATTERY: 'rgba(255, 99, 132, 0.6)',
+                DAY_RHYTHM_DETECTION: 'rgba(54, 162, 235, 0.6)',
+                EV04_LOW_BATTERY: 'rgba(255, 206, 86, 0.6)',
+                FRAME_SHUTDOWN: 'rgba(75, 192, 192, 0.6)',
+                MESSAGE_MEDICINE_ANSWER_NO: 'rgba(153, 102, 255, 0.6)',
+                TEMPERATURE_TOO_HIGH: 'rgba(255, 159, 64, 0.6)',
+                TEMPERATURE_TOO_LOW: 'rgba(224, 31, 31, 0.75)',
+                EV04_SHUTDOWN: 'rgba(91, 225, 255, 0.69)',
+                EV04_FALL: 'rgba(255, 102, 204, 0.6)',
+                MESSAGE_NO_RESPONSE: 'rgba(102, 80, 255, 0.6)',
+                MESSAGE_MEDICINE_NO_RESPONSE: 'rgba(0, 191, 165, 0.6)'
             };
 
-            const types = Object.keys(counts);
-            const labels = types.map(type => netteLabels[type] || type);
-            const values = types.map(type => counts[type]);
-            const backgroundColors = types.map(type => kleurenPerType[type] || 'rgba(200,200,200,0.6)');
+            const types = Object.keys(counts); // typenamen uit counts
+            const labels = types.map(type => netteLabels[type] || type); //typenamen krijgen nette labels
+            const values = types.map(type => counts[type]); // aantal alerts per type
+            const backgroundColors = types.map(type => kleurenPerType[type] || 'rgba(200,200,200,0.6)'); // types krijgen eigen kleur
 
+            // context voor het tekenen van een 2D-chart
             const ctx = canvas.getContext("2d");
+
+            // totaal aantal alerts
             const total = values.reduce((a, b) => a + b, 0);
 
-            // totaal alerts in het midden te tonen van chart
+            // totaal alerts in het midden tonen van chart
             const centerTextPlugin = {
                 id: 'centerText',
                 beforeDraw(chart) {
@@ -169,8 +200,8 @@ function updateDoughnutChart(canvasId, selectedYearMonth) {
                 }
             };
 
-
-            doughnutCharts[canvasId] = new Chart(ctx, {
+            // chart wordt gemaakt
+            donutCharts[canvasId] = new Chart(ctx, {
                 type: "doughnut",
                 data: {
                     labels: labels,
@@ -201,6 +232,8 @@ function updateDoughnutChart(canvasId, selectedYearMonth) {
             console.error('Fout bij laden of verwerken data:', err);
         });
 }
+
+//maakt/update aantal actieve devices
 function updateAantalActieveDevices(titleId, aantalId, selectedYearMonth) {
     fetch(`/api/devices?month=${selectedYearMonth}`)
         .then(res => res.json())
@@ -233,6 +266,7 @@ function updateAantalActieveDevices(titleId, aantalId, selectedYearMonth) {
         });
 }
 
+//maakt/update alert bar chart
 async function updateDeviceAlertBarChart(canvasId, selectedYearMonth) {
     const deviceRes = await fetch(`/api/devices?month=${selectedYearMonth}`);
     const alertRes = await fetch(`/api/alerts?month=${selectedYearMonth}`);
@@ -284,6 +318,7 @@ async function updateDeviceAlertBarChart(canvasId, selectedYearMonth) {
         "500+": 0
     };
 
+    //zoeken hoeveel alerts elk device heeft. Geen? dan 0
     devices.forEach(device => {
         const count = alertCounts[device.frameDeviceIdentifier] || 0;
         if (count === 0) buckets["0"]++;
@@ -297,12 +332,14 @@ async function updateDeviceAlertBarChart(canvasId, selectedYearMonth) {
         else buckets["500+"]++;
     });
 
-    // Chart.js bar chart
-    const labels = Object.keys(buckets);
-    const values = Object.values(buckets);
 
+    const labels = Object.keys(buckets); // X-as
+    const values = Object.values(buckets); //  Y-as
+
+    // Context voor het tekenen van een 2D-chart
     const ctx = canvas.getContext("2d");
 
+    // chart wordt gemaakt
     deviceAlertCharts[canvasId] = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -332,9 +369,175 @@ async function updateDeviceAlertBarChart(canvasId, selectedYearMonth) {
     });
 }
 
+//maakt/update originId message chart
+function updateIdChart(canvasId, selectedYearMonth) {
+    fetch(`/api/messages?month=${selectedYearMonth}`)
+        .then(response => response.json())
+        .then(data => {
+            const messages = data.data.messages;
+            const canvas = document.getElementById(canvasId);
+            const melding = document.getElementById("geenDataMeldingIdBar");
+
+
+            // Update de titel boven de chart
+            document.getElementById("idBarTitle").textContent = `Berichten van ` + updateDateTitle(selectedYearMonth) + ` minus een jaar`;
+
+            // verwijdert eventuele charts
+            if (idBarCharts[canvasId]) {
+                idBarCharts[canvasId].destroy();
+            }
+
+            // Als geen data beschikbaar is
+            if (!messages || messages.length === 0) {
+                canvas.style.display = "none";
+                melding.style.display = "block";
+                return;
+            }
+
+            // Verberg "geen data" en toon canvas
+            canvas.style.display = "block";
+            melding.style.display = "none";
+
+            // Verwerk data per maand
+            const maandData = {};
+
+
+            //groepering van berichten per maan en telling originId
+            messages.forEach(msg => {
+                const date = new Date(msg.sent);
+                const maand = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`; //"2025-01"
+                if (!maandData[maand]) maandData[maand] = {}; // als maand nog niet bestaat dan wordt hij aangemaakt
+                const originId = msg.originId;
+                maandData[maand][originId] = (maandData[maand][originId] || 0) + 1; // tellen hoe vaak een bepaald originId voorkomt. eerste keer? 0 dan +1
+            });
+
+            const labels = Object.keys(maandData).sort(); // x-as
+            const duplicateIds = []; // berichten (originId's) >1 keer
+            const uniekeIds = [];      // berichten (originId's) = 1 keer
+
+            // per maand berekenen hoeveel ids er 1x of vaker zijn
+            labels.forEach(maand => {
+                let eenKeer = 0;
+                let vaker = 0;
+                Object.values(maandData[maand]).forEach(count => {
+                    if (count === 1) eenKeer++;
+                    else vaker++;
+                });
+                duplicateIds.push(vaker);
+                uniekeIds.push(eenKeer);
+            });
+
+            const ctx = canvas.getContext("2d");
+
+            idBarCharts[canvasId] = new Chart(ctx, {
+                plugins: [ChartDataLabels],
+                type: "bar",
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: "Berichten naar meerdere frames",
+                            data: duplicateIds,
+                            backgroundColor: "rgba(75, 192, 192, 0.7)",
+                            stack: "stack1"
+                        },
+                        {
+                            label: "Berichten naar 1 frame",
+                            data: uniekeIds,
+                            backgroundColor: "rgba(255, 159, 64, 0.7)",
+                            stack: "stack1"
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        datalabels: {
+                            display: function(context) {
+                                return context.datasetIndex === context.chart.data.datasets.length - 1;
+                            },
+                            formatter: function(value, context) { //voor totaal per bar
+                                const datasets = context.chart.data.datasets;
+                                const index = context.dataIndex;
+                                let sum = 0;
+                                datasets.forEach(ds => {
+                                    sum += ds.data[index];
+                                });
+                                return sum;
+                            },
+                            anchor: 'end',
+                            align: 'top',
+                            font: {
+                                weight: 'bold'
+                            }
+                        },
+                        legend: { position: "bottom" },
+                        title: {
+                            display: true,
+                            text: "Aantal berichten die naar meerdere frames zijn gestuurd vs naar 1 frame (per maand)",
+                            padding: {
+                                bottom: 20
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true, beginAtZero: true }
+                    },
+                },
+            });
+        });
+}
+
+function avgCommunityCall(canvasId){
+    fetch("/api/communityCalls")
+        .then(response => response.json())
+        .then(data => {
+            const calls = data.data.calls;
+            const canvas = document.getElementById(canvasId);
+            const melding = document.getElementById("geenDataMeldingCall");
+
+            // Update de titel boven de chart
+            document.getElementById("callTitle").textContent = "Gemiddelde duur van (video)call met zorgprofessional";
+            document.getElementById("subTitle").textContent= "(Uitschieters uitgefilterd: 1% kortste en langste duur)"
+
+            // Als geen data beschikbaar is
+            if (!calls|| calls.length === 0) {
+                canvas.style.display = "none";
+                melding.style.display = "block";
+                return;
+            }
 
 
 
+            // Haal 'started' en 'ended' waarden op en bereken de duur van elk gesprek
+            const durations = calls.map(call => {
+                const started = new Date(call.started);
+                const ended = new Date(call.ended);
+                return (ended - started) / 1000; // in seconden
+            });
+
+            // Sorteer de durations array
+            durations.sort((a, b) => a - b);
+
+            // Bereken het aantal datums om eruit te halen (1%)
+            const numberOfCalls = durations.length;
+            const removeCount = Math.floor(numberOfCalls * 0.01);
+
+            // Verwijder de eerste 1% en laatste 1%
+            const filteredDurations = durations.slice(removeCount, numberOfCalls - removeCount);
+
+            // Bereken het gemiddelde
+            const totaal = filteredDurations.reduce((sum, dur) => sum + dur, 0);
+            const gemiddelde = totaal / filteredDurations.length;
+
+            // Toont gemiddelde in minuten en seconden
+            const gemMinuten = Math.floor(gemiddelde / 60);
+            const gemSeconden = Math.round(gemiddelde % 60);
+            canvas.innerText = `${gemMinuten} minuten en ${gemSeconden} seconden`;
+        });
+
+}
 
 // Inlogfunctie
 document.getElementById('loginForm')?.addEventListener('submit', async function (e) {

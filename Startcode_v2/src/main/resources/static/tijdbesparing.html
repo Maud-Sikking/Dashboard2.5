@@ -171,12 +171,12 @@
 
     </style>
 </head>
-<body class="zorgprof-pagina">
+<body>
 
 <div class="dashboard-body">
     <header class="header">
         <img src="../LogoGenus.png" alt="Genus Logo" style="position: absolute; top: 10px; right: 50px; width: 200px; height: auto;" />
-        <h1 class="dashboard-title">Genus Dashboard - Zorgprofessionals</h1>
+        <h1 class="dashboard-title">Genus Dashboard - Tijdbesparing</h1>
 
     </header>
     <section class="sidebar">
@@ -184,8 +184,8 @@
 
         <ul class="list-group custom-sidebar-list">
             <li class="list-group-item sidebar-item"><a href="dash.html">Algemeen Dashboard</a></li>
-            <li class="list-group-item sidebar-item active-item"><a href="zorgprof.html">Zorgprofessionals</a></li>
-            <li class="list-group-item sidebar-item"><a href="tijdbesparing.html">Tijdbesparing</a></li>
+            <li class="list-group-item sidebar-item"><a href="zorgprof.html">Zorgprofessionals</a></li>
+            <li class="list-group-item sidebar-item active-item"><a href="tijdbesparing.html">Tijdbesparing</a></li>
             <li class="list-group-item sidebar-item"><a href="dash.html">Meer</a></li>
             <li class="list-group-item sidebar-item"><a href="dash.html">Instellingen</a></li>
         </ul>
@@ -213,33 +213,21 @@
             <label for="yearSelect">Jaar:</label>
             <select id="yearSelect"></select>
 
-            <button id="filterBtnZorgprof" class="btn-toon">Toon</button>
+            <button id="filterBtn" class="btn-toon">Toon</button>
         </div>
 
     </section>
     <main class="main">
 
         <div class="card">
-            <h5 id="idBarTitle" class="card-title">Berichten overzicht laden...</h5>
-            <canvas id="messageIdChart" ></canvas>
-            <div id="geenDataMeldingIdBar" class="geenDataMelding">
-                Geen data beschikbaar voor deze maand en jaar.
-            </div>
-
-        </div>
-
-        <div class="card">
-            <h5 id="callTitle" class="card-title">Gemiddelde duur (video)call laden...</h5>
-            <h5 id="subTitle" style="color: #888;font-size: 10px; margin-left: 20px"></h5>
-            <p id="gemCall" class="card-text" style="font-size: 2rem; font-weight: bold; text-align: center"></p>
-            <div id="geenDataMeldingCall" class="geenDataMelding" >
-                Geen data beschikbaar voor deze maand en jaar.
-            </div>
 
         </div>
 
         <div class="card">
 
+        </div>
+
+        <div class="card">
 
         </div>
 
@@ -250,9 +238,6 @@
     </main>
 
 </div>
-<!-- Chart.js DataLabels plugin -->
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-
 <script src="script.js"></script>
 
 </body>

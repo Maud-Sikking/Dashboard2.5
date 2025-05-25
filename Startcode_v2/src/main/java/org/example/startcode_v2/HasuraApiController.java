@@ -79,23 +79,49 @@ public class HasuraApiController extends ApiController {
     return restTemplate.exchange(BASE_URL, HttpMethod.POST, request, String.class);
   }
 
+  @GetMapping("/api/messages")
+  public ResponseEntity<String> messages(@RequestParam String month) {
+    YearMonth ym = YearMonth.parse(month); // "2025-01"
+    String start = ym.minusYears(1).atDay(1).toString(); // "2024-01-01"
+    String end = ym.plusMonths(1).atDay(1).toString(); // "2025-02-01"
 
-  @GetMapping("/api/origin-ids-per-maand")
-  public ResponseEntity<String> originIdPerMaand() {
+    String query = """
+{
+  messages(where: {
+    sent: { _gte: "%s", _lt: "%s" }
+    
+  }) {
+    originId
+    sent
+  }
+}
+""".formatted(start, end);
+
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("x-hasura-admin-secret", SECRET);
+
+    HttpEntity<String> request = new HttpEntity<>("{\"query\": \"" + query.replace("\"", "\\\"").replace("\n", "") + "\"}", headers);
+
+    ResponseEntity<String> response = restTemplate.exchange(
+            BASE_URL,
+            HttpMethod.POST,
+            request,
+            String.class
+    );
+
+    return response;
+  }
+
+  @GetMapping("/api/communityCalls")
+  public ResponseEntity<String> communityCalls() {
     String query = """
     {
-      decemberMeerdereFrames: meerdere_originids_december_2024_aggregate {aggregate {count}}
-      decemberTotaal: messages_aggregate(distinct_on: originId
-               where: {sent: {_gte: "2024-12-01T00:00:00", _lt: "2025-01-01T00:00:00"}}) {aggregate { count }}
-      januariMeerdereFrames: meerdere_originids_januari_2025_aggregate {aggregate {count}}
-      januariTotaal: messages_aggregate(distinct_on: originId
-               where: {sent: {_gte: "2025-01-01T00:00:00", _lt: "2025-02-01T00:00:00"}}) {aggregate { count }}
-      februariMeerdereFrames: meerdere_originids_februari_2025_aggregate {aggregate {count}}
-      februariTotaal: messages_aggregate(distinct_on: originId
-               where: {sent: {_gte: "2025-02-01T00:00:00", _lt: "2025-03-01T00:00:00"}}) {aggregate { count }}
-      maartMeerdereFrames: meerdere_originids_maart_2025_aggregate {aggregate {count}}
-      maartTotaal: messages_aggregate(distinct_on: originId
-               where: {sent: {_gte: "2025-03-01T00:00:00", _lt: "2025-04-01T00:00:00"}}) {aggregate { count }}
+      calls(where: {type: {_eq: "COMMUNITY"}, started: {_is_null: false}, ended: {_is_null: false}}) {
+                  started
+                  ended
+      }
     }
     """;
 
@@ -103,7 +129,10 @@ public class HasuraApiController extends ApiController {
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.set("x-hasura-admin-secret", SECRET);
 
-    HttpEntity<String> request = new HttpEntity<>("{\"query\": \"" + query.replace("\"", "\\\"").replace("\n", "") + "\"}", headers);
+    HttpEntity<String> request = new HttpEntity<>(
+            "{\"query\": \"" + query.replace("\"", "\\\"").replace("\n", "") + "\"}",
+            headers
+    );
 
     ResponseEntity<String> response = restTemplate.exchange(
             BASE_URL,
@@ -163,36 +192,6 @@ public class HasuraApiController extends ApiController {
     headers.set("x-hasura-admin-secret", SECRET);
 
     HttpEntity<String> request = new HttpEntity<>("{\"query\": \"" + query.replace("\"", "\\\"").replace("\n", "") + "\"}", headers);
-
-    ResponseEntity<String> response = restTemplate.exchange(
-            BASE_URL,
-            HttpMethod.POST,
-            request,
-            String.class
-    );
-
-    return response;
-  }
-
-  @GetMapping("/api/communityCalls")
-  public ResponseEntity<String> communityCalls() {
-    String query = """
-    {
-      calls(where: {type: {_eq: "COMMUNITY"}, started: {_is_null: false}, ended: {_is_null: false}}) {
-                  started
-                  ended
-      }
-    }
-    """;
-
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    headers.set("x-hasura-admin-secret", SECRET);
-
-    HttpEntity<String> request = new HttpEntity<>(
-            "{\"query\": \"" + query.replace("\"", "\\\"").replace("\n", "") + "\"}",
-            headers
-    );
 
     ResponseEntity<String> response = restTemplate.exchange(
             BASE_URL,
